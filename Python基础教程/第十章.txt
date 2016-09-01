@@ -1,0 +1,120 @@
+
+# 《Python基础教程》第十章 模块
+
+## 模块
+任何python程序都可以作为模块导入。
+导入模块并不意味着在导入时执行某些操作，而主要用于定义。
+因为只需要定义这些东西一次，所以导入多次和导入一次是一样的。
+
+如果坚持重新载入模块，可以使用内建的reload函数。它带有一个参数（要重新导入的模块），并且返回重新载入的模块。
+尽可能避免重新载入模块。
+
+### 模块主要用于定义
+定义所有的类、函数和复制后的变量成为了模块的特性。
+如果希望模块被执行，可以用-m开关来执行程序。
+>python -m progname args
+
+模块.函数()
+可以通过同样的方法来使用任何在模块的全局作用域中定义的名称。
+模块化是为了让代码重用。
+
+告知模块本身是作为程序运行还是导入到其他程序。
+__name__变量
+在主程序（包括交互式提示符）__name__值是__main__，而在导入的模块中，值为模块名字。
+if __name__ == '__main__':test()
+只在主程序运行时执行，作为模块导入时不执行。
+
+最理想的情况：一开始sys.path本身就包含模块的目录。
+1. 将模块放在合适的位置
+只需要找出Python解释器从哪找模块，然后放在那即可。
+sys模块的path变量
+C:\\Anaconda2\\lib\\site-packages
+是最合适的放置路径
+2. 告诉解释器到哪找模块
+sys.path.append('路径')
+windows找环境变量autoexec.bat文件
+set PYTHONPATH=%PYTHONPATH%;c:\python
+
+### 包
+为了组织好模块，可以将它们分组为包。
+包是另一类模块，它们能包含其他模块。
+当模块存储在文件中时，包就是模块所在的目录。
+为了让Python能将其当作包来对待，它必须包含一个__init__.py的文件。
+如果把包当作普通文件导入的话，文件的内容就是包的内容。
+为了将模块放置在包里，直接把模块放置在包目录内即可。
+eg:
+如果要建立一个叫做drawing的包，包括名为shapes和colors的模块，需要创建如下目录
+/python/	PYTHONPATH中的目录
+/python/drawing	包目录（drawing包）
+/python/drawing/__init__.py		包代码（drawing模块）
+/python/drawing/colors.py	colors模块
+/python/drawing/shapes.py	shape模块
+以下导入合法：
+import drawing
+import drawing.colors
+from drawing import shapes
+
+## 探究模块
+1. 使用dir函数查看模块内容
+dir(模块)
+用列表推导式过滤掉以下划线开头的名字列表
+[n for n in dir(copy) if not n.startswith('_')]
+2. __all__变量
+和列表推导式得出的结果类似.
+它定义了模块的共有接口。
+如果使用from copy import *，则会导入__all__里的内容。
+__all__会过滤掉以下划线开头的东西。
+3. help函数
+显示文档。模块文档，类文档，函数文档。
+学习Python最有用的文档莫过于Python库参考。
+http://python.org/doc/lib
+
+### 使用源代码
+阅读源代码，时学习Python最好的方式。
+一个模块的源代码位于__file__属性
+用编辑器打开标准库文件时，注意不要修改它。
+
+## 一些标准库
+sys模块是与解释器密切相关的变量/函数
+最重要的是包括了sys.path
+
+os模块提供了访问多个操作系统服务的功能。
+os.system(r'路径') 启动外部程序
+windows的特有函数	os.startfile
+os.startfile(r'路径')
+ps.打开浏览器的更好的方法webbrowser模块
+>
+import webbrowser
+webbrowser.open('域名')
+
+fileinput模块
+fileinput.input是最重要的函数，返回能够用于for循环遍历的对象。
+input([files[,inpplace[,backup]]])
+filename()	返回当前文件名
+lineno()	返回当前累计行数
+filelineno()	返回当前文件的行数
+isfirstline()	检查当前行是否是第一行
+nextfile()	关闭当前文件，移动到下一个文件
+close()	关闭序列
+
+### 集合、堆和双端队列
+
+time模块
+time.asctime()	获取系统当前时间
+localtime()	将秒数转换为日期元组
+mktime(tuple)	将时间元组转换为本地时间
+sleep(5)	休眠5秒
+time()	当前时间（新世纪开元后的秒数）
+
+datetime模块，支持日期和时间的算法
+timeit模块，帮助开发人员对代码段的执行时间进行计时
+
+random模块
+random()	返回0-1之间的随机实数
+uniform(a,b)	返回随机实数n，其中a-n-b
+randrange([start],stop,[step])
+choice(seq)	从序列seq中返回随意元素
+shuffle(seq[,random])	原地洗牌序列seq
+sample(seq,n)	从seq中选择n个随机且独立的数
+
+re模块：正则表达式

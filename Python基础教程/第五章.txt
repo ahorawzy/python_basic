@@ -1,0 +1,147 @@
+
+# 《Python基础教程》第五章
+
+条件、循环和其他语句
+
+print	使用逗号输出，中间会插入空格
+import	使用as作为别名，整个模块的别名，函数也可以起别名
+
+## 赋值魔法
+### 序列解包
+x,y,z=1,2,3
+当函数或方法返回元组时，这个特性尤其有效
+d={'name':'Robin','girlfriend':'Marion'}
+key,value=d.popitem()
+它允许番薯返回一个以上的值并且打包成元组，然后通过一个赋值语句很容易访问。
+序列解包元素数量必须和放置在=左边的变量数量完全一致
+### 增量赋值
+x+=1
+
+## 语句块
+冒号表示语句块的开始，块中每一语句都是缩进的，当退回到和已经闭合的块一样的缩进量时，语句块结束。
+>if bool_function:
+	do something
+elif bool_function:
+	do something
+else:
+	do something
+	
+### 更复杂的条件
+比较运算符
+== 相等运算符
+is 同一运算符
+in 成员资格运算符
+字符串和序列比较
+布尔运算符
+
+### 断言
+if not condition:
+	crash program
+与其让程序晚点崩溃，不如在错误条件出现时直接让它崩溃。
+>age=-1
+assert 0<age<100	
+program crash
+如果需要确保某个条件为真才能让程序工作，assert语句可以在程序中加入检查点。
+
+### 循环
+（能用for循环，尽量不用while循环）
+>x=1
+while x <= 100:
+	print x
+	x +=1
+
+>name=''
+while not name.strip():
+	name=raw_input('Please enter your name:')
+print 'Hello, %s' %name
+
+>for number in range(100):
+		print number
+
+一个for循环可以遍历字典的所有键和值，d.items方法会将键-值作为元组返回
+for循环的一大好处就是可以循环中使用序列解包
+for key,value in d.items():
+	print key,'corresponds to',value
+
+### 一些迭代工具
+#### 并行迭代:zip
+>names=['anne','beth','george','damon']
+ages=[12,45,32,102]
+for i in range(len(names)):
+	print names[i],'is',ages[i],'years old'
+
+>zip(names,ages)
+for name,age in zip(names,ages):
+	print name,'is',age,'years old'
+	
+zip可以处理不等长序列，当最短的序列用完为止
+
+#### 按索引迭代
+for index,string in enumerate(strings):
+	if 'xxx' in string:
+		strings[index]='[censored]'
+这个函数可以在提供索引的地方迭代键值对
+
+#### 翻转和排序
+sorted()	返回列表
+reversed()	返回可迭代对象
+
+### 跳出循环
+break
+continue
+
+**需求：需要用户在提示符下输入单词时做一些事，在用户不输入单词时结束循环
+>word='dummy'
+while word:
+	word = raw_input('Please enter a word:')
+	print 'The word was '+word
+使用哑值就是工作没有尽善尽美的标志
+
+>word = raw_input('Please enter a word:')
+while word:
+	print 'The word was' + word
+	word = raw_input('Please enter a word:')
+消掉了哑值，但有重复代码
+
+>
+while True:
+	word = raw_input('Please enter a word:')
+	if not word : break
+	print 'The word was ' + word
+	
+## 列表推导式
+利用其他列表创建新列表
+[x*x for x in range(10)]
+[x*x for x in range(10) if x%3 == 0]
+[(x,y) for x in range(3) for y in range(3)]
+相当于
+result=[]
+for x in range(3):
+	for y in range(3):
+		result.append((x,y))
+
+##三个特殊语句
+
+pass
+代码中的占位符，用于测试时在代码块中占位，使得程序能够执行
+
+del
+负责清除对象
+
+exec/eval 执行字符串中的代码，动态创建代码
+exec可以执行字符串中的代码，但简单的用不是好事，因为会破坏命名空间。
+>from math import sqrt
+exec "sqrt = 1"
+sqrt(4)
+...crash
+
+所以为了安全起见，可以增加一个字典，起到命名空间的作用
+>
+from math import sqrt
+scope = {}
+exec 'sqrt = 1' in scope
+scope['sqrt']
+
+exec会执行一系列Python语句，而eval会计算Python表达式，并且返回结果值。
+eval(raw_input("Enter an arithmetic expression:"))
+	

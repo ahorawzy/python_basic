@@ -1,0 +1,94 @@
+
+# 《Python基础教程》第八章：异常
+
+Python用异常对象表示异常情况。
+如果异常未被处理或捕捉，程序会用回溯终止执行。traceback。
+每个异常都是一些类的实例，并且用多种方法进行捕捉，使得程序不会失效。
+
+## 按自己的方式出错
+### raise语句
+>raise Exception
+
+>raise Exception('hyperdirve overload')
+
+重要的异常类
+Exception 异常类的基类
+AttributeError	特性引用或赋值失败时引发
+IOError	试图打开不存在文件时引发
+KeyError	在使用不存在索引时引发
+NameError	在找不到变量名字时引发
+SyntaxError	语法错误时引发
+TypeError	应用于错误类型时引发
+ValueError	使用正确的类型，但不合适的值时引发
+ZeroDivisionError	除以0时引发
+
+定义自己的异常类：
+class SomeCustomException(Exception):pass
+
+## 捕捉异常
+try/except语句
+>
+try:
+	x=input('Enter the first number:')
+	y=input('Enter the second number:')
+	print x/y
+except ZeroDivisionError:
+	print "The second number can't be zero!"
+
+如果捕捉到了异常，但又想重新引发，可以调用不带参数的raise。
+如果用户使用，则打印错误信息，不传播异常。如果程序内部调试，则传播异常。
+class MuffledCalculator:
+	muffled = Flase
+	def calc(self,expr):
+		try:
+			return eval(expr)
+		except ZeroDivisionError:
+			if self.muffled:
+				print 'Division by zero is illegal'
+			else:
+				raise
+
+可以加入不止一个exception
+异常处理不会搞乱原代码，而增加很多if会让代码很难读。
+
+如果需要用一个块捕捉多个异常类型，可以将它们作为元组列出。
+>
+except(ZeroDivisionError,TypeError,NameError):
+	pass
+
+如果希望在except子句中访问异常对象本身，可以使用两个参数。比如给用户打印出错误。
+>
+except(ZeroDivisionError,TypeError),e:
+	print e
+
+### 全部捕捉
+能够捕捉所有异常的语句
+>
+try:
+	pass
+except:
+	print "Something wrong happened."
+	
+### else语句，没有发生异常时执行
+>
+while True:
+	try:
+		pass
+	
+	except:
+		print 'Invalid input. Please try again'
+	else:
+		break
+
+### finally语句
+在可能的异常后进行清理。
+>
+x = None
+try:
+	x=1/0
+finally:
+	print'Cleaning up..'
+	del x
+finally子句用于关闭文件或者网络嵌套字时非常有用。
+
+使用try/except语句比使用if/else语句更Python一些，应尽量养成try/exception习惯。

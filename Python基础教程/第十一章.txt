@@ -1,0 +1,79 @@
+
+# 《Python基础教程》第十一章 文件和流
+
+## 打开文件
+open(name[,mode[,buffering]])
+open函数使用一个文件名作为唯一的强制参数，然后返回一个文件对象。
+f=open(r'C:\text\somefile.txt')
+文件模式
+r	读模式
+w	写模式
+a	追加模式
+b	二进制模式
++	读/写模式
+
+缓冲如果是0，就是无缓冲，如果是1，就是有缓冲，即用内存代替硬盘，让程序更快。
+### 读和写
+f=open('somefile.txt','w')
+f.write('Hello,')
+f.write('World!')
+f.close()
+f.read()
+
+readlines方法可以读取一个文件中的所有行并将其作为列表返回
+
+牢记用close方法关闭文件
+如果确保文件被关闭了，使用try/finally语句
+try:
+	pass
+finally:
+	file.close()
+专门设计的with语句
+with open("somefile.txt") as somefile:
+	do_something(somefile)
+with语句可以打开文件并且赋值在变量上，然后将数据写入文件。
+文件在语句结束后会自动关闭，即使由异常引起的结束也是如此。
+
+## 对文件内容进行迭代
+### 按行操作
+>
+f=open(filename)
+while True:
+	line = f.readline()
+	if not line: break
+	process(line)
+f.close()
+
+### 读取所有内容
+如果文件不是很大，可以使用不带参数的read方法一次性读取整个文件。
+或者使用readlines方法（把文件读入一个字符串列表，列表中每个字符串就是一行）
+>
+f = open(filename)
+for char in f.read():
+	process(char)
+f.close()
+
+>
+f = open(filename)
+for line in f.readlins():
+	process(line)
+f.close()
+
+但文件很大，readlines会占用太多内存，可以使用fileinput实现惰性迭代
+>
+import fileinput
+for line in fileinput.input(filename):
+	process(line)
+
+文件迭代器：文件对象是可以迭代的，可以直接在for循环中是用它们
+>
+f = open(filename)
+for line in f:
+	process(line)
+f.close()
+
+进一步简化
+>
+for line in open(filename):
+	process(line)
+
