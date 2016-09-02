@@ -15,11 +15,11 @@ def createDataSet():
                [0, 1, 'no'],
                [0, 1, 'no']]
     labels = ['no surfacing','flippers']
+	# labels的含义是：特征的标签
     #change to discrete values
     return dataSet, labels
 
 def calcShannonEnt(dataSet):
-	"计算熵"
     numEntries = len(dataSet)
 	# 获得实例总数
     labelCounts = {}
@@ -42,13 +42,6 @@ def calcShannonEnt(dataSet):
     return shannonEnt
     
 def splitDataSet(dataSet, axis, value):
-	'''
-	按给定特征划分数据集
-	其中输入：
-	dataSet	待划分数据集
-	axis	划分数据集的特征
-	value	需要返回的特征的值
-	'''
     retDataSet = []
 	# 初始化一个新列表
     for featVec in dataSet:
@@ -63,9 +56,6 @@ def splitDataSet(dataSet, axis, value):
     return retDataSet
     
 def chooseBestFeatureToSplit(dataSet):
-	'''
-	选择最好数据集划分方式
-	'''
     numFeatures = len(dataSet[0]) - 1      #the last column is used for the labels
 	# len(dataset[0])是计算数据集的列数，最后一列是标签列
     baseEntropy = calcShannonEnt(dataSet)
@@ -99,9 +89,6 @@ def chooseBestFeatureToSplit(dataSet):
     return bestFeature                      #returns an integer
 
 def majorityCnt(classList):
-'''
-多数表决投票
-'''
     classCount={}
 	# 设置一个空字典
     for vote in classList:
@@ -116,44 +103,68 @@ def majorityCnt(classList):
 	# 返回频数最多的键值对元组中的第一维，即键
 
 def createTree(dataSet,labels):
-'''
-创建树的代码
-'''
+	# 递归函数从一开始就是个大循环
     classList = [example[-1] for example in dataSet]
+	# 遍历数据集的每一行，将最后一个赋予列表，形成类列表
     if classList.count(classList[0]) == len(classList): 
         return classList[0]#stop splitting when all of the classes are equal
+		# 类别相同则停止继续划分，第一个类数量等于总体数量是类别相同的充要条件
     if len(dataSet[0]) == 1: #stop splitting when there are no more features in dataSet
         return majorityCnt(classList)
+		# 如果没有特征了，则返回多数投票结果
     bestFeat = chooseBestFeatureToSplit(dataSet)
+	# 选择最佳划分
     bestFeatLabel = labels[bestFeat]
+	# 存储最佳特征的标签
     myTree = {bestFeatLabel:{}}
+	# 用字典存储树的信息
     del(labels[bestFeat])
+	# 删除最佳特征的标签
     featValues = [example[bestFeat] for example in dataSet]
+	# 将最佳特征的值提取出来
     uniqueVals = set(featValues)
+	# 唯一化处理
     for value in uniqueVals:
+	# 对于每一个值
         subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
-        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
-    return myTree                            
+        # 复制一份标签列表，防止列表按引用操作被修改
+		myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
+		# 最佳特征的值等于递归创造树的函数createTree，划分数据集
+	return myTree                            
     
 def classify(inputTree,featLabels,testVec):
     firstStr = inputTree.keys()[0]
+	# 第一个字段：返回字典的第一个键
     secondDict = inputTree[firstStr]
+	# 第二个字典：输入树下的第一个子树
     featIndex = featLabels.index(firstStr)
+	# 列表.index返回第一个匹配项的索引位置
     key = testVec[featIndex]
+	# key是用于判断的值
     valueOfFeat = secondDict[key]
+	# 在子树中寻找对应的特征值
     if isinstance(valueOfFeat, dict): 
+	# 如果是字典
         classLabel = classify(valueOfFeat, featLabels, testVec)
+		# 则递归寻找
     else: classLabel = valueOfFeat
+	# 如果不是字典（而是类标签）则返回类标签
     return classLabel
 
 def storeTree(inputTree,filename):
     import pickle
+	# 导入pickle模块
     fw = open(filename,'w')
+	# 以改写模式打开一个文件
     pickle.dump(inputTree,fw)
+	# 把树倒入文件中
     fw.close()
-    
+    # 关闭文件
 def grabTree(filename):
     import pickle
+	# 导入pickle模块
     fr = open(filename)
+	# 打开文件
     return pickle.load(fr)
+	# 载入文件
     
