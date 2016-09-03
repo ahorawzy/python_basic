@@ -18,9 +18,6 @@ from os import listdir
 # 主要功能是列出给定目录的文件名
 
 def classify0(inX, dataSet, labels, k):
-	'''
-	k近邻的核心算法
-	'''
     dataSetSize = dataSet.shape[0]	#得到dataSet的行数
     diffMat = tile(inX, (dataSetSize,1)) - dataSet
 	# 将inX利用np.tile拓展成dataSet一样的数据规模，然后元素相减，得到元素差
@@ -44,17 +41,11 @@ def classify0(inX, dataSet, labels, k):
     return sortedClassCount[0][0]
 
 def createDataSet():
-	'''
-	创建数据集
-	'''
     group = array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
     labels = ['A','A','B','B']
     return group, labels
 
 def file2matrix(filename):
-	'''
-	将文本记录转换为Numpy的解析程序
-	'''
     fr = open(filename)
     numberOfLines = len(fr.readlines())         #get the number of lines in the file
 	# 获得行数
@@ -80,9 +71,6 @@ def file2matrix(filename):
     return returnMat,classLabelVector
     
 def autoNorm(dataSet):
-	'''
-	归一化特征值
-	'''
     minVals = dataSet.min(0)
 	# 寻找列的最小值
     maxVals = dataSet.max(0)
@@ -99,9 +87,6 @@ def autoNorm(dataSet):
     return normDataSet, ranges, minVals
    
 def datingClassTest():
-	'''
-	测试代码
-	'''
     hoRatio = 0.50      #hold out 10%
 	# 定义测试样本所占比例
     datingDataMat,datingLabels = file2matrix('datingTestSet2.txt')       #load data setfrom file
@@ -122,9 +107,6 @@ def datingClassTest():
     print errorCount
     
 def img2vector(filename):
-	'''
-	将32*32的数组转化为1*1024的向量
-	'''
     returnVect = zeros((1,1024))
 	# 先初始化一个零向量
     fr = open(filename)
