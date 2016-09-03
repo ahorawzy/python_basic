@@ -18,11 +18,12 @@ from os import listdir
 # 主要功能是列出给定目录的文件名
 
 def classify0(inX, dataSet, labels, k):
-    dataSetSize = dataSet.shape[0]	#得到dataSet的行数
+    dataSetSize = dataSet.shape[0]	#得到dataSet的行数，相当于len(dataSet)
     diffMat = tile(inX, (dataSetSize,1)) - dataSet
 	# 将inX利用np.tile拓展成dataSet一样的数据规模，然后元素相减，得到元素差
+	# inX是需要拓展的向量，（a,b）a是拓展的行的倍数，b是拓展的列的倍数
     sqDiffMat = diffMat**2
-	# 求平方
+	# 对于每一个元素求平方
     sqDistances = sqDiffMat.sum(axis=1)
 	# 求行和
     distances = sqDistances**0.5
