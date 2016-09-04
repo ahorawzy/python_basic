@@ -135,44 +135,76 @@ def textParse(bigString):    #input is big string, #output is word list
 def spamTest():
 # 对贝叶斯垃圾邮件分类器进行自动化处理
     docList=[]; classList = []; fullText =[]
+	# 空文档列表，空类列表，空全文档列表
     for i in range(1,26):
+	# 遍历每个文档
         wordList = textParse(open('email/spam/%d.txt' % i).read())
+		# 读取每个单词，并且用textParse函数处理，得到单词列表
         docList.append(wordList)
+		# 将单词列表添加到文档列表中
         fullText.extend(wordList)
+		# 用单词列表拓展全文档列表
         classList.append(1)
+		# 列表.append()方法在末尾追加新对象，在此例中追加1类
         wordList = textParse(open('email/ham/%d.txt' % i).read())
         docList.append(wordList)
         fullText.extend(wordList)
         classList.append(0)
     vocabList = createVocabList(docList)#create vocabulary
+	# 利用文档列表，创建单词表
     trainingSet = range(50); testSet=[]           #create test set
+	# 初始化，训练集为0-50，测试集为空
     for i in range(10):
         randIndex = int(random.uniform(0,len(trainingSet)))
+		# random.uniform(a,b)返回随机实数n,其中a<=n<b,int改为整型
         testSet.append(trainingSet[randIndex])
+		# 将被选中的训练集索引添加到测试集索引中
         del(trainingSet[randIndex])  
+		# 删除训练集索引
     trainMat=[]; trainClasses = []
+	# 初始化空的训练矩阵和训练集类标签列表
     for docIndex in trainingSet:#train the classifier (get probs) trainNB0
+	# 对每个训练集索引
         trainMat.append(bagOfWords2VecMN(vocabList, docList[docIndex]))
+		# 通过输入单词表和文档列表，用词袋函数，转化为文档01向量，并添加到训练矩阵中
         trainClasses.append(classList[docIndex])
+		# 将对应的类添加到训练集类标签列表中
     p0V,p1V,pSpam = trainNB0(array(trainMat),array(trainClasses))
+	# 进行朴素贝叶斯训练，得到两个概率向量和一个概率
     errorCount = 0
+	# 初始化错误频数为0
     for docIndex in testSet:        #classify the remaining items
+	# 对每个测试集文档索引
         wordVector = bagOfWords2VecMN(vocabList, docList[docIndex])
+		# 运用词袋函数转化为文档向量
         if classifyNB(array(wordVector),p0V,p1V,pSpam) != classList[docIndex]:
+		# 如果所预测的类不是它自身的类
             errorCount += 1
+			# 错误频数+1
             print "classification error",docList[docIndex]
+			# 显示分类错误
     print 'the error rate is: ',float(errorCount)/len(testSet)
+	# 计算错误率并返回
     #return vocabList,fullText
 
 def calcMostFreq(vocabList,fullText):
+# 计算出现频率
     import operator
+	# 引入操作符模块
     freqDict = {}
+	# 初始化一个空的频率集字典
     for token in vocabList:
+	# 遍历单词列表
         freqDict[token]=fullText.count(token)
+		# 列表.count()统计出现次数，将出现次数赋予字典中的值
     sortedFreq = sorted(freqDict.iteritems(), key=operator.itemgetter(1), reverse=True) 
-    return sortedFreq[:30]       
+    # 按键值对中的值大小进行反向排序
+	return sortedFreq[:30]    
+	# 返回出现频率在前30的单词
 
 def localWords(feed1,feed0):
+# 这段代码和spamTest几乎一样，区别在于输入是两个数据源，而不是文本文件
+# 添加了去除最高频的30个词的功能，可以提高分类器的准确率
     import feedparser
     docList=[]; classList = []; fullText =[]
     minLen = min(len(feed1['entries']),len(feed0['entries']))
@@ -187,6 +219,7 @@ def localWords(feed1,feed0):
         classList.append(0)
     vocabList = createVocabList(docList)#create vocabulary
     top30Words = calcMostFreq(vocabList,fullText)   #remove top 30 words
+	# 移除掉30个常用词，可以有助于提高分类器的准确率
     for pairW in top30Words:
         if pairW[0] in vocabList: vocabList.remove(pairW[0])
     trainingSet = range(2*minLen); testSet=[]           #create test set
