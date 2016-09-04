@@ -42,6 +42,7 @@ def setOfWords2Vec(vocabList, inputSet):
     return returnVec
 
 def trainNB0(trainMatrix,trainCategory):
+# 朴素贝叶斯分类的核心函数
     numTrainDocs = len(trainMatrix)
 	# 计算文档数
     numWords = len(trainMatrix[0])
@@ -79,6 +80,7 @@ def trainNB0(trainMatrix,trainCategory):
     return p0Vect,p1Vect,pAbusive
 
 def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
+# 使用训练好的朴素贝叶斯模型对未知数据向量分类
     p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
 	# 两个向量元素级的相乘相加，对数将原本的相乘变成了相加
     p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
@@ -89,10 +91,16 @@ def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
         return 0
     
 def bagOfWords2VecMN(vocabList, inputSet):
+# 词袋：每个词可以出现多次
     returnVec = [0]*len(vocabList)
+	# 同样先定义一个词汇表长度的列表
     for word in inputSet:
+	# 对于输入文档的每个词
         if word in vocabList:
+		# 如果词在单词表内
             returnVec[vocabList.index(word)] += 1
+			# 列表.index()查找第一个匹配值的索引，索引对应的值不是设为1，而是+1
+			# 就完成了词袋转换
     return returnVec
 
 def testingNB():
@@ -120,9 +128,12 @@ def testingNB():
 def textParse(bigString):    #input is big string, #output is word list
     import re
     listOfTokens = re.split(r'\W*', bigString)
+	# 分隔符是除单词、数字外的任意字符串
     return [tok.lower() for tok in listOfTokens if len(tok) > 2] 
+	# 过滤掉长度小于3的字符串，简单的解析
     
 def spamTest():
+# 对贝叶斯垃圾邮件分类器进行自动化处理
     docList=[]; classList = []; fullText =[]
     for i in range(1,26):
         wordList = textParse(open('email/spam/%d.txt' % i).read())
