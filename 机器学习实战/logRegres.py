@@ -136,6 +136,7 @@ def colicTest():
         trainingSet.append(lineArr)
 		# 将列表加入到训练集列表中
         trainingLabels.append(float(currLine[21]))
+		# 将第22个字段加入到训练集标签列表中
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
     errorCount = 0; numTestVec = 0.0
     for line in frTest.readlines():
