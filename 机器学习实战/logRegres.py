@@ -88,33 +88,53 @@ def stocGradAscent0(dataMatrix, classLabels):
     return weights
 
 def stocGradAscent1(dataMatrix, classLabels, numIter=150):
+# 改进的随机梯度上升
+# 增加迭代次数作为第三个参数
     m,n = shape(dataMatrix)
     weights = ones(n)   #initialize to all ones
     for j in range(numIter):
+	# 对于每一次迭代
         dataIndex = range(m)
+		# 设置文档的索引列表
         for i in range(m):
+		# 对于每一个文档
             alpha = 4/(1.0+j+i)+0.0001    #apha decreases with iteration, does not 
-            randIndex = int(random.uniform(0,len(dataIndex)))#go to 0 because of the constant
-            h = sigmoid(sum(dataMatrix[randIndex]*weights))
+            # alpha在每次迭代时都会调整，会随着迭代次数不断减小，但不会减小到0
+			randIndex = int(random.uniform(0,len(dataIndex)))#go to 0 because of the constant
+            # 第二个改进之处：通过随机选取样本减小周期性波动
+			# 随机从列表中选取一个值，再删除该值，实现无放回的抽样
+			h = sigmoid(sum(dataMatrix[randIndex]*weights))
             error = classLabels[randIndex] - h
             weights = weights + alpha * error * dataMatrix[randIndex]
             del(dataIndex[randIndex])
     return weights
 
 def classifyVector(inX, weights):
+# 分类便捷函数
     prob = sigmoid(sum(inX*weights))
+	# inX和weights两个向量的元素乘积
     if prob > 0.5: return 1.0
     else: return 0.0
 
 def colicTest():
+# 预测病马死亡率的便捷函数
     frTrain = open('horseColicTraining.txt'); frTest = open('horseColicTest.txt')
-    trainingSet = []; trainingLabels = []
+    # 读取两个文件
+	trainingSet = []; trainingLabels = []
+	# 训练集和训练类标签初始化为空列表
     for line in frTrain.readlines():
+	# 对于训练集的每一行，读取行
+	# file.readline()在读取大文件时使用，当文件大小大于内存大小时，每次读取一行
+	# file.readlines()在读取一般文件时使用，把所有行读到内存中，在内存中迭代
         currLine = line.strip().split('\t')
+		# 以tab键进行单词分割，读到currLine列表中
         lineArr =[]
         for i in range(21):
+		# 遍历前21个字段
             lineArr.append(float(currLine[i]))
+			# 将每个字段的数据录入到列表中
         trainingSet.append(lineArr)
+		# 将列表加入到训练集列表中
         trainingLabels.append(float(currLine[21]))
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
     errorCount = 0; numTestVec = 0.0
