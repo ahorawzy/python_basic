@@ -138,6 +138,9 @@ def colicTest():
         trainingLabels.append(float(currLine[21]))
 		# 将第22个字段加入到训练集标签列表中
     trainWeights = stocGradAscent1(array(trainingSet), trainingLabels, 1000)
+	# 运用改进的随即梯度下降的方法算出训练权重
+	
+	# 以下是检测部分，按理说应该写个检测函数封装起来。
     errorCount = 0; numTestVec = 0.0
     for line in frTest.readlines():
         numTestVec += 1.0
@@ -152,6 +155,7 @@ def colicTest():
     return errorRate
 
 def multiTest():
+# 多次测试
     numTests = 10; errorSum=0.0
     for k in range(numTests):
         errorSum += colicTest()
