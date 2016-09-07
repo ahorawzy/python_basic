@@ -7,21 +7,35 @@ from numpy import *
 from time import sleep
 
 def loadDataSet(fileName):
+# 读取数组的函数
     dataMat = []; labelMat = []
+	# 初始化数据集列表和标签列表
     fr = open(fileName)
+	# 打开文件，赋予一个文件变量
     for line in fr.readlines():
+	# 读取每一行并遍历
         lineArr = line.strip().split('\t')
+		# 去除空格，并以tab分割，存储到列表
         dataMat.append([float(lineArr[0]), float(lineArr[1])])
+		# 将列表第1、2个元素追加到数据集列表中
         labelMat.append(float(lineArr[2]))
+		# 将列表第3个元素追加到标签列表中
     return dataMat,labelMat
+	# 返回数据集列表和标签列表
 
 def selectJrand(i,m):
+# 该函数用于在某个区间范围内随机选择一个整
+# i是不能等于的一个数，m是所有alpha的数目
     j=i #we want to select any J not equal to i
     while (j==i):
+	# 用while循环实现一个不知道循环几次的循环体
         j = int(random.uniform(0,m))
+		# random.uniform()返回随机实数n，其中a<=n<=b
     return j
+	# 返回这个不等于i，不超过m的随机整数
 
 def clipAlpha(aj,H,L):
+# 该函数用于调整大于H或小于L的alpha值
     if aj > H: 
         aj = H
     if L > aj:
@@ -29,13 +43,21 @@ def clipAlpha(aj,H,L):
     return aj
 
 def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
+# 五个输入参数：数据集，类别标签，常数C，容错率，推出前最大的迭代次数
     dataMatrix = mat(dataMatIn); labelMat = mat(classLabels).transpose()
+	# 数据集转换为矩阵，类标签转换为列向量
     b = 0; m,n = shape(dataMatrix)
+	# 初始化b，m和n分别为数据集的行数和列数
     alphas = mat(zeros((m,1)))
+	# alphas为m行1列的列向量
     iter = 0
+	# 初始化迭代次数为0次
     while (iter < maxIter):
+	# 当迭代次数小于最大迭代次数时
         alphaPairsChanged = 0
+		# 初始化alphaPC，用于记录alpha是否已经优化
         for i in range(m):
+		# 对数据集的每个数据向量
             fXi = float(multiply(alphas,labelMat).T*(dataMatrix*dataMatrix[i,:].T)) + b
             Ei = fXi - float(labelMat[i])#if checks if an example violates KKT conditions
             if ((labelMat[i]*Ei < -toler) and (alphas[i] < C)) or ((labelMat[i]*Ei > toler) and (alphas[i] > 0)):
