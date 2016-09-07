@@ -106,7 +106,7 @@ def adaBoostTrainDS(dataArr,classLabels,numIt=40):
     m = shape(dataArr)[0]
 	# m记录数据集的行数
     D = mat(ones((m,1))/m)   #init D to all equal
-	# 初始化D为全为1的m行1列的列向量
+	# 初始化D为和为1的m行1列的列向量
     aggClassEst = mat(zeros((m,1)))
 	# 集成累预测为全为1的列向量
     for i in range(numIt):
@@ -116,11 +116,13 @@ def adaBoostTrainDS(dataArr,classLabels,numIt=40):
 		# 利用决策树桩将最佳树桩，错误和类预测记录下来
         alpha = float(0.5*log((1.0-error)/max(error,1e-16)))#calc alpha, throw in max(error,eps) to account for error=0
         # 利用alpha的公式，通过错误率计算alpha
+		# max(error,1e-16)保证没有除0错误
 		bestStump['alpha'] = alpha  
-        # 利用字典，记录alpha值
+        # 利用字典，记录alpha值，该字典记录了分类所需要的所有信息
 		weakClassArr.append(bestStump)                  #store Stump Params in Array
         #print "classEst: ",classEst.T
-        expon = multiply(-1*alpha*mat(classLabels).T,classEst) #exponent for D calc, getting messy
+        # 将最佳树桩的字典记录到弱分类向量的列表中，列表的元素可以是字典
+		expon = multiply(-1*alpha*mat(classLabels).T,classEst) #exponent for D calc, getting messy
         D = multiply(D,exp(expon))                              #Calc New D for next iteration
         D = D/D.sum()
         #calc training error of all classifiers, if this is 0 quit for loop early (use break)
